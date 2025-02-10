@@ -88,7 +88,7 @@ def ingredientsfetch():
         # Initialize the generative model (use a distinct variable name)
         gen_model = genai.GenerativeModel('gemini-1.5-flash')
         # Adjust the method call as required by the API; here we assume a synchronous call returning an object with a .text attribute.
-        result = gen_model.generate_text(prompt=prompt)
+        result = gen_model.generate_content(prompt)
         
         # Clean up the temporary image file
         os.remove(temp_image_path)
@@ -139,24 +139,28 @@ def predict():
         "temperature": 0.5
     }
     # Replace the URL below with the actual Gemini API endpoint.
-    gemini_url = "https://api.gemini.example/v1/generate"
-    gemini_response = requests.post(gemini_url, headers=headers, json=gemini_payload)
+    # gemini_url = "https://api.gemini.example/v1/generate"
+    # gemini_response = requests.post(gemini_url, headers=headers, json=gemini_payload)
 
-    if gemini_response.status_code != 200:
-        return jsonify({
-            "error": "Gemini API request failed",
-            "details": gemini_response.text
-        }), 500
+    # if gemini_response.status_code != 200:
+    #     return jsonify({
+    #         "error": "Gemini API request failed",
+    #         "details": gemini_response.text
+    #     }), 500
 
-    gemini_result = gemini_response.json()  # Expecting a JSON response from Gemini
+    # gemini_result = gemini_response.json()  # Expecting a JSON response from Gemini
 
-    # Construct the final JSON response
-    response = {
-        "predicted_class": predicted_class,
-        "confidence": float(predictions[0][class_id]),
-        "gemini_analysis": gemini_result
-    }
-    return jsonify(response)
+    # # Construct the final JSON response
+    # response = {
+    #     "predicted_class": predicted_class,
+    #     "confidence": float(predictions[0][class_id]),
+    #     "gemini_analysis": gemini_result
+    # }
+
+    client = genai.GenerativeModel('gemini-1.5-flash')
+    response = client.generate_content(prompt)
+
+    return jsonify(response.text)
 
 if __name__ == "__main__":
     app.run(debug=True)  # Run with debug mode enabled
